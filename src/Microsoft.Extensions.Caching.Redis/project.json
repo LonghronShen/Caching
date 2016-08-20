@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Distributed cache implementation of Microsoft.Extensions.Caching.Distributed.IDistributedCache using Redis.",
   "packOptions": {
     "repository": {
@@ -23,14 +23,21 @@
   "dependencies": {
     "Microsoft.Extensions.Caching.Abstractions": "1.0.0",
     "Microsoft.Extensions.Options": "1.0.0",
-    "StackExchange.Redis.StrongName": "1.0.333"
+    "StackExchange.Redis.StrongName": "1.1.605"
   },
   "frameworks": {
     "net451": {
+      "imports": [ "net45" ],
       "frameworkAssemblies": {
         "System.Runtime": {
           "type": "build"
         }
+      }
+    },
+    "netstandard1.5": {
+      "dependencies": {
+        "System.Linq": "4.1.0",
+        "System.Threading": "4.0.11"
       }
     }
   }
