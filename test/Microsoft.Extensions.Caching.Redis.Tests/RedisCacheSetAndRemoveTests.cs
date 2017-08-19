@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.Caching.Redis
     // These tests require Redis server to be started on the machine. Make sure to change the value of
     // "RedisTestConfig.RedisPort" accordingly.
     // public
-    class RedisCacheSetAndRemoveTests
+    public class RedisCacheSetAndRemoveTests
     {
         [Fact]
         public void GetMissingKeyReturnsNull()

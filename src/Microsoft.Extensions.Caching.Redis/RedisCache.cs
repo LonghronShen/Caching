@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.Caching.Redis
         private const string DataKey = "data";
         private const long NotPresent = -1;
 
-        private volatile ConnectionMultiplexer _connection;
+        private static Lazy<ConnectionMultiplexer> _connection;
         private IDatabase _cache;
 
         private readonly RedisCacheOptions _options;
@@ -158,45 +158,47 @@ namespace Microsoft.Extensions.Caching.Redis
 
         private void Connect()
         {
-            if (_connection != null)
+            if (_connection?.Value != null)
             {
                 return;
             }
 
-            _connectionLock.Wait();
+            //_connectionLock.Wait();
             try
             {
-                if (_connection == null)
+                if (_connection?.Value == null)
                 {
-                    _connection = ConnectionMultiplexer.Connect(_options.Configuration);
-                    _cache = _connection.GetDatabase();
+                    _connection = new Lazy<ConnectionMultiplexer>(() =>
+                        ConnectionMultiplexer.Connect(_options.Configuration));
+                    _cache = _connection.Value.GetDatabase();
                 }
             }
             finally
             {
-                _connectionLock.Release();
+                //_connectionLock.Release();
             }
         }
 
         private async Task ConnectAsync()
         {
-            if (_connection != null)
+            if (_connection?.Value != null)
             {
                 return;
             }
 
-            await _connectionLock.WaitAsync();
+            //await _connectionLock.WaitAsync();
             try
             {
-                if (_connection == null)
+                if (_connection?.Value == null)
                 {
-                    _connection = await ConnectionMultiplexer.ConnectAsync(_options.Configuration);
-                    _cache = _connection.GetDatabase();
+                    _connection = new Lazy<ConnectionMultiplexer>(() =>
+                        ConnectionMultiplexer.Connect(_options.Configuration));
+                    _cache = await Task.Run(() => _connection.Value.GetDatabase());
                 }
             }
             finally
             {
-                _connectionLock.Release();
+                //_connectionLock.Release();
             }
         }
 
@@ -411,9 +413,9 @@ namespace Microsoft.Extensions.Caching.Redis
 
         public void Dispose()
         {
-            if (_connection != null)
+            if (_connection?.Value != null)
             {
-                _connection.Close();
+                _connection.Value.Close();
             }
         }
     }
